@@ -16,7 +16,17 @@ namespace TracerConsole
             Tracer tracer = new Tracer();
             tracer.StartTrace();
             tracer.StopTrace();
-            Console.WriteLine(tracer.GetTraceResult().ClassName);
+            JsonSerializer jsonSerializer = new JsonSerializer();
+            XMLSerializer xmlSerializer = new XMLSerializer();
+            FileWriter fileWriter = new FileWriter();
+            ConsoleWriter consoleWriter = new ConsoleWriter();
+
+            string json = jsonSerializer.Serialize(tracer.GetTraceResult());
+            string xml = xmlSerializer.Serialize(tracer.GetTraceResult());
+
+            fileWriter.Write(json, xml);
+            consoleWriter.Write(json, xml);
+
             Console.Read();
         }
     }

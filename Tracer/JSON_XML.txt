@@ -1,0 +1,2 @@
+{"ClassName":"Program","Time":0,"MethodName":"Main"}
+<TraceResult class="Program" time="0" method="Main" />
