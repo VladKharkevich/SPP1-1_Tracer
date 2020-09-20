@@ -56,6 +56,8 @@
     <Compile Include="ISerialize.cs" />
     <Compile Include="ITracer.cs" />
     <Compile Include="JsonSerializer.cs" />
+    <Compile Include="RootResult.cs" />
+    <Compile Include="ThreadResult.cs" />
     <Compile Include="Tracer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TraceResult.cs" />

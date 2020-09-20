@@ -11,8 +11,8 @@ namespace ClassLibrary
         void StartTrace();
         
         void StopTrace();
-    
-        TraceResult GetTraceResult();
+
+        RootResult GetTraceResult();
     }
 }
 

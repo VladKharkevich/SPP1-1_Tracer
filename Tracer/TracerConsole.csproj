@@ -42,6 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DemoFirstClass.cs" />
+    <Compile Include="DemoSecondClass.cs" />
+    <Compile Include="DemoThirdClass.cs" />
     <Compile Include="FileWriter.cs" />
     <Compile Include="IWriterResults.cs" />
     <Compile Include="Program.cs" />
@@ -56,6 +59,9 @@
       <Project>{f8b645da-f179-4fe3-91f8-89a135e74174}</Project>
       <Name>TracerLib</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="JSON_XML.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -8,6 +8,6 @@ namespace ClassLibrary
 {
     interface ISerialize
     {
-        string Serialize(TraceResult traceResult);
+        string Serialize(RootResult rootResult);
     }
 }
