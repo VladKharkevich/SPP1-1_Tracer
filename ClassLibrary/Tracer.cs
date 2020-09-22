@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -10,7 +11,29 @@ namespace ClassLibrary
 {
     public class Tracer : ITracer
     { 
-        private RootResult fRootResult;
+        private TraceResult fTraceResult;
+
+        private long GetUnixTimeInMilliseconds()
+        {
+            return (Int64)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds;
+        }
+
+        private List<string> GetStackTraceOfMethodNames(int startCheck)
+        {
+            StackTrace stackTrace = new StackTrace();
+            List<string> stackMethods = new List<string>();
+            int i = startCheck;
+            while (true)
+            {
+                MethodBase methodic = stackTrace.GetFrame(i).GetMethod();
+                if (methodic.Name == "Main" || methodic.Name == "ThreadStart_Context" || methodic.Name == "InvokeMethod")
+                    break;
+                i++;
+                stackMethods.Add(methodic.Name);
+            }
+            stackMethods.Reverse();
+            return stackMethods;
+        }
 
         private string GetMethodName()
         {
@@ -30,45 +53,34 @@ namespace ClassLibrary
         private ThreadResult GetOrCreateThreadResult()
         {
             int threadId = System.Threading.Thread.CurrentThread.ManagedThreadId;
-            foreach  (ThreadResult thResult in fRootResult.Threads)
+            foreach  (ThreadResult thResult in fTraceResult.Threads)
             {
                 if (thResult.Id == threadId)
                     return thResult;
             }
             ThreadResult threadResult = new ThreadResult(threadId, 0);
-            fRootResult.Threads.Add(threadResult);
+            fTraceResult.Threads.Add(threadResult);
             return threadResult;
         }
 
-        private TraceResult CreateTraceResult(ThreadResult threadResult)
+        private MethodResult CreateTraceResult(ThreadResult threadResult)
         {
             string methodName = GetMethodName();
             string className = GetClassName();
-            TraceResult traceResult = new TraceResult(className, methodName, (Int64)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds);
-            StackTrace stackTrace = new StackTrace();
-            List<string> stackMethods = new List<string>();
-            int i = 2;
-            while (true)
-            {
-                MethodBase methodic = stackTrace.GetFrame(i).GetMethod();
-                if (methodic.Name == "Main" || methodic.Name == "ThreadStart_Context")
-                    break;
-                i++;
-                stackMethods.Add(methodic.Name);
-            }
-            stackMethods.Reverse();
+            MethodResult methodResult = new MethodResult(className, methodName, GetUnixTimeInMilliseconds());
+            List<string> stackMethods = GetStackTraceOfMethodNames(3);
             bool isFirst = true;
-            TraceResult traceIter = traceResult;
+            MethodResult traceIter = methodResult;
 
-            foreach (string methodNameFuck in stackMethods)
+            foreach (string methodNameTemp in stackMethods)
             {
                 if (isFirst)
                 {
                     isFirst = false;
                     bool isExist = false;
-                    foreach (TraceResult traceTemp in threadResult.DependenceMethods)
+                    foreach (MethodResult traceTemp in threadResult.DependenceMethods)
                     {
-                        if (traceTemp.MethodName == methodNameFuck)
+                        if (traceTemp.MethodName == methodNameTemp)
                         {
                             traceIter = traceTemp;
                             isExist = true;
@@ -77,16 +89,16 @@ namespace ClassLibrary
                     }
                     if (!isExist)
                     {
-                        threadResult.DependenceMethods.Add(traceResult);
+                        threadResult.DependenceMethods.Add(methodResult);
                         break;
                     }
                 }
                 else
                 {
                     bool isExist = false;
-                    foreach (TraceResult traceTemp in traceIter.DependenceMethods)
+                    foreach (MethodResult traceTemp in traceIter.DependenceMethods)
                     {
-                        if (traceTemp.MethodName == methodNameFuck)
+                        if (traceTemp.MethodName == methodNameTemp)
                         {
                             traceIter = traceTemp;
                             isExist = true;
@@ -95,29 +107,42 @@ namespace ClassLibrary
                     }
                     if (!isExist)
                     {
-                        traceIter.DependenceMethods.Add(traceResult);
+                        traceIter.DependenceMethods.Add(methodResult);
                         break;
                     }
                 }
             }
-            return traceResult;
+            return methodResult;
         }
 
         public Tracer()
         {
-            fRootResult = new RootResult(0);
+            fTraceResult = new TraceResult();
             ThreadResult threadResult = new ThreadResult(System.Threading.Thread.CurrentThread.ManagedThreadId, 0);
-            fRootResult.Threads.Add(threadResult);
+            fTraceResult.Threads.Add(threadResult);
         }
 
-        public RootResult GetTraceResult()
+        public TraceResult GetTraceResult()
         {
-            return fRootResult;
+            foreach (ThreadResult threadResult in fTraceResult.Threads)
+            {
+                long counter_time = 0;
+                foreach (MethodResult traceResult in threadResult.DependenceMethods)
+                {
+                    counter_time += traceResult.Time;
+                }
+                threadResult.Time = counter_time;
+            }
+            return fTraceResult;
         }
 
         public void StartTrace()
         {
-            ThreadResult threadResult = GetOrCreateThreadResult();
+            ThreadResult threadResult;
+            lock (fTraceResult)
+            {
+                threadResult = GetOrCreateThreadResult();
+            }
             CreateTraceResult(threadResult);
         } 
 
@@ -125,29 +150,17 @@ namespace ClassLibrary
         {
             ThreadResult threadResult = GetOrCreateThreadResult();
             string methodName = GetMethodName();
-            StackTrace stackTrace = new StackTrace();
-            List<string> stackMethods = new List<string>();
-            int i = 1;
-            while (true)
-            {
-                MethodBase methodic = stackTrace.GetFrame(i).GetMethod();
-                Console.WriteLine(methodic.Name);
-                if (methodic.Name == "Main" || methodic.Name == "ThreadStart_Context")
-                    break;
-                i++;
-                stackMethods.Add(methodic.Name);
-            }
-            stackMethods.Reverse();
+            List<string> stackMethods = GetStackTraceOfMethodNames(2);
             bool isFirst = true;
-            TraceResult traceIter = new TraceResult("", "", 0);
-            foreach (string methodNameFuck in stackMethods)
+            MethodResult traceIter = new MethodResult("", "", 0);
+            foreach (string methodNameTemp in stackMethods)
             {
                 if (isFirst)
                 {
                     isFirst = false;
-                    foreach (TraceResult traceTemp in threadResult.DependenceMethods)
+                    foreach (MethodResult traceTemp in threadResult.DependenceMethods)
                     {
-                        if (traceTemp.MethodName == methodNameFuck)
+                        if (traceTemp.MethodName == methodNameTemp)
                         {
                             traceIter = traceTemp;
                             break;
@@ -156,9 +169,9 @@ namespace ClassLibrary
                 }
                 else
                 {
-                    foreach (TraceResult traceTemp in traceIter.DependenceMethods)
+                    foreach (MethodResult traceTemp in traceIter.DependenceMethods)
                     {
-                        if (traceTemp.MethodName == methodNameFuck)
+                        if (traceTemp.MethodName == methodNameTemp)
                         {
                             traceIter = traceTemp;
                             break;
@@ -166,7 +179,7 @@ namespace ClassLibrary
                     }
                 }
             }
-            traceIter.Time = (Int64)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalMilliseconds - traceIter.Time;
+            traceIter.Time = GetUnixTimeInMilliseconds() - traceIter.Time;
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,8 +12,8 @@ namespace TracerConsole
     {
         public void Write(params string[] args)
         {
-            string path = "JSON_XML.txt";
-            if (!File.Exists(path))
+            var path = "JSON_XML.txt";
+            if (File.Exists(path))
             {
                 using (StreamWriter sw = File.CreateText(path))
                 {

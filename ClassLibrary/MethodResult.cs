@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using YAXLib;
 
 namespace ClassLibrary
 {
-    public class ThreadResult
-    {
-        public ThreadResult(int id,  long time)
+    public class MethodResult
+    {   
+        public MethodResult(string className, string methodName, long time)
         {
             this.Time = time;
-            this.Id = id;
+            this.ClassName = className;
+            this.MethodName = methodName;
             this.DependenceMethods = new List<MethodResult>();
         }
         [YAXAttributeForClass()]
-        [YAXSerializeAs("id")]
-        public int Id { get; internal set; }
+        [YAXSerializeAs("class")]
+        public string ClassName { get; internal set; }
 
         [YAXAttributeForClass()]
         [YAXSerializeAs("time")]
         public long Time { get; internal set; }
 
+        [YAXSerializeAs("methodName")]
         [YAXAttributeForClass()]
-        [YAXSerializeAs("methods")]
+        public string MethodName { get; internal set; }
+
+        [YAXSerializeAs("method")]
         public List<MethodResult> DependenceMethods { get; internal set; }
     }
 }

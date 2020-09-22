@@ -12,7 +12,7 @@ namespace ClassLibrary
         
         void StopTrace();
 
-        RootResult GetTraceResult();
+        TraceResult GetTraceResult();
     }
 }
 

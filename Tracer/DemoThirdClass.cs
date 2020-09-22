@@ -12,12 +12,12 @@ namespace TracerConsole
     {
         private Tracer fTracer;
 
-        internal DemoThirdClass(Tracer tracer)
+        public DemoThirdClass(Tracer tracer)
         {
             fTracer = tracer;
         }
 
-        public void SecondMethod()
+        public void ThirdMethod()
         {
             fTracer.StartTrace();
             Thread.Sleep(10);

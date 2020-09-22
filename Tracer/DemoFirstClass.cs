@@ -13,7 +13,7 @@ namespace TracerConsole
         private Tracer fTracer;
         private DemoSecondClass fDemoSecondClass;
 
-        internal DemoFirstClass(Tracer tracer)
+        public DemoFirstClass(Tracer tracer)
         {
             fTracer = tracer;
             fDemoSecondClass = new DemoSecondClass(fTracer);
@@ -24,6 +24,13 @@ namespace TracerConsole
             fTracer.StartTrace();
             Thread.Sleep(100);
             fDemoSecondClass.SecondMethod();
+            fTracer.StopTrace();
+        }
+
+        public void OtherMethod()
+        {
+            fTracer.StartTrace();
+            Thread.Sleep(5);
             fTracer.StopTrace();
         }
     }

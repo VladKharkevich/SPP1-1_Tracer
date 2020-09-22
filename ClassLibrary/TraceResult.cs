@@ -1,32 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using YAXLib;
 
 namespace ClassLibrary
 {
     public class TraceResult
-    {   
-        public TraceResult(string className, string methodName, long time)
+    {
+        public TraceResult()
         {
-            this.Time = time;
-            this.ClassName = className;
-            this.MethodName = methodName;
-            this.DependenceMethods = new List<TraceResult>();
+            this.Threads = new List<ThreadResult>();
         }
-        [YAXAttributeForClass()]
-        [YAXSerializeAs("class")]
-        public string ClassName { get; internal set; }
 
         [YAXAttributeForClass()]
-        [YAXSerializeAs("time")]
-        public long Time { get; internal set; }
-
-        [YAXSerializeAs("methodName")]
-        [YAXAttributeForClass()]
-        public string MethodName { get; internal set; }
-
-        [YAXSerializeAs("methods")]
-        [YAXAttributeForClass()]
-        public List<TraceResult> DependenceMethods { get; internal set; }
+        [YAXSerializeAs("threads")]
+        public List<ThreadResult> Threads { get; internal set; }
     }
 }

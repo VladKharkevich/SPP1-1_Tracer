@@ -57,6 +57,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SerializersTests.cs" />
     <Compile Include="TracerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -67,6 +68,10 @@
     <ProjectReference Include="..\ClassLibrary\TracerLib.csproj">
       <Project>{f8b645da-f179-4fe3-91f8-89a135e74174}</Project>
       <Name>TracerLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tracer\TracerConsole.csproj">
+      <Project>{2BCC21AE-C21E-40CA-846C-5C15DAC2F125}</Project>
+      <Name>TracerConsole</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />

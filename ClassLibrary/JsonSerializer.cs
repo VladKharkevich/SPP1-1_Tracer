@@ -9,9 +9,9 @@ namespace ClassLibrary
 {
     public class JsonSerializer : ISerialize
     {
-        public string Serialize(RootResult rootResult)
+        public string Serialize(TraceResult traceResult)
         {
-            string rawJson = JsonConvert.SerializeObject(rootResult);
+            string rawJson = JsonConvert.SerializeObject(traceResult);
             int i = 0;
             int counterOfTab = 0;
             while (i < rawJson.Length)
@@ -21,14 +21,14 @@ namespace ClassLibrary
                     counterOfTab++;
                     string tabs = "";
                     for (int j = 0; j < counterOfTab; j++)
-                        tabs += "\t";
+                        tabs += "    ";
                     rawJson = rawJson.Substring(0, i + 1) + "\n" + tabs + rawJson.Substring(i + 1);
                 }
                 if (rawJson[i] == ',')
                 {
                     string tabs = "";
                     for (int j = 0; j < counterOfTab; j++)
-                        tabs += "\t";
+                        tabs += "    ";
                     rawJson = rawJson.Substring(0, i + 1) + "\n" + tabs + rawJson.Substring(i + 1);
                 }
                 if (rawJson[i] == '}' || rawJson[i] == ']')
@@ -36,7 +36,7 @@ namespace ClassLibrary
                     counterOfTab--;
                     string tabs = "";
                     for (int j = 0; j < counterOfTab - 1; j++)
-                        tabs += "\t";
+                        tabs += "    ";
                     rawJson = rawJson.Substring(0, i + 1) + "\n" + tabs + rawJson.Substring(i + 1);
                 }
                 if (rawJson[i] == ':')

@@ -11,10 +11,10 @@ namespace ClassLibrary
 {
     public class XMLSerializer : ISerialize
     {
-        public string Serialize(RootResult rootResult)
+        public string Serialize(TraceResult traceResult)
         {
-            YAXSerializer serializer = new YAXSerializer(typeof(RootResult));
-            return serializer.Serialize(rootResult);
+            YAXSerializer serializer = new YAXSerializer(typeof(TraceResult));
+            return serializer.Serialize(traceResult);
         }
     }
 }
